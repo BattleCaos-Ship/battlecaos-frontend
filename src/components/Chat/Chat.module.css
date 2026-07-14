@@ -1,0 +1,57 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 1rem;
+  height: 320px;
+  width: 260px;
+}
+
+.title {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.msg {
+  font-size: 0.88rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.sender {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.inputRow input {
+  flex: 1;
+  min-width: 0;
+}
+
+.inputRow button {
+  padding: 0.55rem 0.8rem;
+}

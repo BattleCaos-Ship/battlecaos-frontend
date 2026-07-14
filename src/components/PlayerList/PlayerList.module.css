@@ -1,0 +1,105 @@
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+/* Fila del tablón verde oscuro (mockup: pizarra de jugadores) */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #16241f;
+  border: 2px solid var(--steel-edge);
+  border-radius: var(--radius-sm);
+  padding: 0.5rem 0.8rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+/* Jugador en turno: resaltado claro */
+.active {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 1px var(--accent-strong), 0 0 12px rgba(72, 202, 228, 0.25);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 0.8rem;
+  color: #06121f;
+  flex-shrink: 0;
+}
+
+.badge[data-team='A'] {
+  background: var(--team-a);
+}
+
+.badge[data-team='B'] {
+  background: var(--team-b);
+}
+
+.name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rel {
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.15rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--border-soft);
+  color: var(--text-dim);
+}
+
+.rel[data-rel='tú'] {
+  color: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.rel[data-rel='compañero'] {
+  color: var(--success);
+  border-color: var(--success);
+}
+
+.rel[data-rel='rival'] {
+  color: var(--team-b);
+  border-color: var(--team-b);
+}
+
+.rel[data-rel='bot'] {
+  color: var(--warning);
+  border-color: var(--warning);
+}
+
+.turnDot {
+  color: var(--accent-strong);
+  font-size: 0.7rem;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.offline {
+  font-size: 0.7rem;
+  color: var(--warning);
+  text-transform: uppercase;
+}

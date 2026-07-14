@@ -1,0 +1,91 @@
+.wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 1.5rem;
+}
+
+.card {
+  /* fondo/borde base: clase global .metal; aquí solo el marco de latón del mockup */
+  border-color: var(--brass-dark);
+  outline: 2px solid var(--brass-hi);
+  outline-offset: -6px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  max-width: 420px;
+  width: 100%;
+}
+
+.win {
+  outline-color: var(--success);
+  box-shadow: 0 0 40px rgba(89, 195, 126, 0.22);
+}
+
+.lose {
+  outline-color: var(--danger);
+}
+
+.title {
+  font-size: 1.8rem;
+  color: var(--accent-strong);
+  margin-bottom: 1.5rem;
+}
+
+.win .title {
+  color: var(--success, #43d6a0);
+}
+
+.lose .title {
+  color: var(--danger, #e63946);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.5rem 1.5rem;
+  justify-content: center;
+  margin-bottom: 1.8rem;
+}
+
+.stats dt {
+  color: var(--text-dim);
+  text-align: right;
+}
+
+.stats dd {
+  text-align: left;
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.actions button {
+  flex: 1 1 8rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.primary {
+  background: var(--accent-strong);
+  color: #06121f;
+  border: 1px solid var(--accent-strong);
+  font-weight: 600;
+}
+
+.secondary {
+  background: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-soft);
+}
+
+.secondary:hover {
+  border-color: var(--text-main);
+}

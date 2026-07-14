@@ -1,0 +1,77 @@
+.wrap {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.7rem;
+  background: linear-gradient(180deg, var(--steel, #343b43), #23282e);
+  border: 2px solid var(--border-soft, #15181d);
+  border-radius: var(--radius, 8px);
+  color: var(--gold, #e8b667);
+  font-family: var(--font-pixel, monospace);
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.trigger:hover { border-color: var(--brass, #a07c42); }
+
+.avatar, .avatarBig {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, var(--brass-hi, #d9b06a), var(--brass, #a07c42));
+  color: var(--brass-text, #241a0c);
+  font-weight: 800;
+  border-radius: 50%;
+}
+.avatar { width: 1.7rem; height: 1.7rem; font-size: 0.9rem; }
+.avatarBig { width: 2.6rem; height: 2.6rem; font-size: 1.3rem; }
+
+.name { max-width: 9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.caret { font-size: 0.7rem; opacity: 0.8; }
+
+.menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  width: 16rem;
+  padding: 1rem;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.card { display: flex; align-items: center; gap: 0.7rem; }
+.cardName { margin: 0; font-weight: 700; color: var(--gold, #e8b667); }
+.cardId {
+  margin: 0.1rem 0 0; font-size: 0.72rem; opacity: 0.7;
+  font-family: var(--font-pixel, monospace); word-break: break-all;
+}
+
+.data { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.6rem; font-size: 0.82rem; }
+.data dt { opacity: 0.7; }
+.data dd { margin: 0; text-align: right; }
+
+.link {
+  text-align: center;
+  color: var(--brass-hi, #d9b06a);
+  text-decoration: none;
+  font-size: 0.9rem;
+  padding: 0.3rem;
+  border: 1px dashed var(--border-soft, #15181d);
+  border-radius: var(--radius, 8px);
+}
+.link:hover { color: var(--gold, #e8b667); }
+
+.logout {
+  padding: 0.5rem;
+  background: linear-gradient(180deg, #c14a38, #8f3327);
+  border: 2px solid var(--border-soft, #15181d);
+  border-radius: var(--radius, 8px);
+  color: #ffe;
+  font-family: var(--font-pixel, monospace);
+  cursor: pointer;
+}
+.logout:hover { filter: brightness(1.1); }
