@@ -1,0 +1,30 @@
+/* Display nixie empotrado (mockup: reloj naranja sobre placa) */
+.timer {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  background: var(--nixie-bg);
+  border: 2px solid var(--steel-edge);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.8rem;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-dim);
+}
+
+.value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--nixie);
+  text-shadow: 0 0 8px rgba(255, 158, 61, 0.6);
+}
+
+.low .value {
+  color: var(--danger);
+}

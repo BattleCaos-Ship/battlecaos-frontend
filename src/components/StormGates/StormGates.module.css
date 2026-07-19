@@ -1,0 +1,161 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ── Cielo tormentoso + rayos (visible cuando las compuertas están cerradas) ── */
+.sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(60, 74, 96, 0.9), rgba(10, 14, 22, 0.96) 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.skyOn {
+  opacity: 1;
+}
+
+.bolt {
+  position: absolute;
+  top: -4%;
+  width: 4px;
+  height: 62%;
+  background: linear-gradient(180deg, #dfe9ff, #9fb6e6 60%, transparent);
+  filter: drop-shadow(0 0 6px #cddcff);
+  clip-path: polygon(40% 0, 60% 0, 45% 32%, 70% 30%, 30% 70%, 52% 46%, 34% 48%, 50% 100%, 30% 55%, 48% 52%, 30% 32%);
+  opacity: 0;
+  animation: boltFlash 1.6s steps(2, end) infinite;
+}
+
+@keyframes boltFlash {
+  0%, 100% { opacity: 0; }
+  6%, 12% { opacity: 1; }
+  9% { opacity: 0.2; }
+}
+
+/* ── Compuertas de acero ────────────────────────────────────────────────────── */
+.gate {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 52%;
+  background:
+    repeating-linear-gradient(180deg, #3a424b 0 14px, #333b43 14px 16px),
+    linear-gradient(90deg, #262c33, #3a424b 50%, #262c33);
+  box-shadow: inset 0 0 0 3px #15181d, 0 0 40px rgba(0, 0, 0, 0.7);
+  transition: transform 0.6s cubic-bezier(0.7, 0, 0.35, 1);
+  image-rendering: pixelated;
+}
+
+.left {
+  left: 0;
+  transform: translateX(-101%);
+  border-right: 5px solid #15181d;
+}
+
+.right {
+  right: 0;
+  transform: translateX(101%);
+  border-left: 5px solid #15181d;
+}
+
+.leftClosed { transform: translateX(0); }
+.rightClosed { transform: translateX(0); }
+
+/* franjas de peligro amarillas/negras en el borde interior */
+.stripes {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 22px;
+  background: repeating-linear-gradient(-45deg, #e3a34f 0 12px, #1a1a1a 12px 24px);
+  box-shadow: inset 0 0 0 2px #15181d;
+}
+
+.left .stripes { right: 0; }
+.right .stripes { left: 0; }
+
+/* remaches */
+.rivets {
+  position: absolute;
+  inset: 12px 34px;
+  background:
+    radial-gradient(circle at 6px 6px, #55636f 0 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 6px) 6px, #55636f 0 2px, transparent 3px),
+    radial-gradient(circle at 6px calc(100% - 6px), #55636f 0 2px, transparent 3px),
+    radial-gradient(circle at calc(100% - 6px) calc(100% - 6px), #55636f 0 2px, transparent 3px);
+}
+
+/* ── Letrero de precaución ──────────────────────────────────────────────────── */
+.signWrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  animation: signIn 0.35s steps(4, end) 1;
+}
+
+.sign {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.8rem;
+  background: repeating-linear-gradient(-45deg, #e3a34f 0 20px, #1a1a1a 20px 40px);
+  border: 5px solid #1a1a1a;
+  border-radius: 6px;
+  box-shadow: 0 0 0 4px #e3a34f, 0 10px 30px rgba(0, 0, 0, 0.7);
+  animation: signShake 0.5s steps(4, end) infinite;
+}
+
+.signText {
+  font-family: var(--font-display, monospace);
+  font-size: 1.15rem;
+  line-height: 1.5;
+  text-align: center;
+  color: #fff;
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000;
+}
+
+.signIcon {
+  font-size: 2.4rem;
+  filter: drop-shadow(0 0 8px #ffd27a);
+  animation: iconBlink 0.4s steps(2, end) infinite;
+}
+
+.by {
+  font-family: var(--font-pixel, monospace);
+  color: #ffd98a;
+  font-size: 1.1rem;
+  text-shadow: 2px 2px 0 #000;
+}
+
+@keyframes signIn {
+  0% { opacity: 0; transform: scale(0.5) rotate(-4deg); }
+  60% { opacity: 1; transform: scale(1.08) rotate(2deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes signShake {
+  0%, 100% { transform: translate(0, 0); }
+  25% { transform: translate(-2px, 1px); }
+  50% { transform: translate(2px, -1px); }
+  75% { transform: translate(-1px, -1px); }
+}
+
+@keyframes iconBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gate { transition: none; }
+  .bolt, .sign, .signIcon, .signWrap { animation: none; }
+}

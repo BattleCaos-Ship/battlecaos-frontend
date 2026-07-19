@@ -1,0 +1,35 @@
+name: Build & Push Docker Image
+
+# Pipeline INDEPENDIENTE de este repo: se dispara solo cuando ESTE servicio
+# cambia. La lógica real de build+push vive en battlecaos-infra (workflow
+# reusable), que además resuelve automáticamente las URLs de gateway/auth del
+# ambiente y las hornea en el build de Vite. Requiere en Settings → Secrets de
+# ESTE repo: AZURE_CLIENT_ID, AZURE_TENANT_ID, AZURE_SUBSCRIPTION_ID Y
+# GOOGLE_CLIENT_ID (ver terraform/DESPLIEGUE.md §E en battlecaos-infra).
+#
+# IMPORTANTE: despliega primero el resto de servicios de ese ambiente (gateway/
+# auth deben existir en Azure) antes de correr este build — si no, falla al
+# no encontrar sus URLs.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Ambiente destino"
+        type: choice
+        options: [dev, test, prod]
+        default: dev
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    uses: BattleCaos-Ship/battlecaos-infra/.github/workflows/build-push-image.yml@main
+    with:
+      service: frontend
+      environment: ${{ inputs.environment || 'dev' }}
+    secrets: inherit

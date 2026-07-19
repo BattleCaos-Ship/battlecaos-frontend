@@ -1,0 +1,502 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head><body>
+<title>BattleCaos-Ship · Manual de combate</title>
+<style>
+  /* ── Mundo de aguas profundas: tema oscuro deliberado (juego naval) ───────── */
+  :root {
+    --abyss:  #08131f;
+    --abyss2: #0a1a2b;
+    --hull:   #0f2033;
+    --hull2:  #16293f;
+    --line:   #23405e;
+    --line2:  #2f5478;
+    --foam:   #d3e2f2;
+    --mist:   #859ab5;
+    --sonar:  #43d6e6;
+    --sonar-dim: #2a8fa0;
+    --flare:  #ff5a5f;
+    --amber:  #f5c451;
+    --teamA:  #4ea8de;
+    --teamB:  #e8825f;
+    --ship:   #4d7fa6;
+
+    --mono: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
+    --body: system-ui, "Segoe UI", Roboto, sans-serif;
+
+    --maxw: 1040px;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: var(--body);
+    color: var(--foam);
+    background:
+      radial-gradient(1200px 600px at 50% -10%, #12324d 0%, transparent 60%),
+      linear-gradient(180deg, var(--abyss2) 0%, var(--abyss) 100%);
+    background-attachment: fixed;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 1.5rem; }
+
+  /* ── Tipografía ───────────────────────────────────────────────────────────── */
+  h1, h2, h3 { text-wrap: balance; margin: 0; }
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--sonar);
+  }
+  h2 {
+    font-size: clamp(1.5rem, 3.5vw, 2.15rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+  }
+  p { margin: 0.6rem 0; }
+  .lead { color: var(--mist); max-width: 62ch; }
+
+  /* ── Héroe con sonar ──────────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    text-align: center;
+    padding: 5rem 1.5rem 3.5rem;
+    overflow: hidden;
+    border-bottom: 1px solid var(--line);
+  }
+  #sonar {
+    position: absolute; inset: 0; margin: auto;
+    width: 460px; height: 460px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+    -webkit-mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+    mask-image: radial-gradient(circle, #000 55%, transparent 72%);
+  }
+  .hero > * { position: relative; z-index: 1; }
+  .hero h1 {
+    font-size: clamp(2.6rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 0.95;
+    text-transform: uppercase;
+  }
+  .hero h1 .caos { color: var(--sonar); }
+  .hero .tag {
+    font-family: var(--mono);
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    color: var(--mist);
+    margin-top: 1.1rem;
+  }
+  .hero .pitch { max-width: 54ch; margin: 1.4rem auto 0; color: var(--foam); font-size: 1.08rem; }
+
+  /* ── Secciones ────────────────────────────────────────────────────────────── */
+  section { padding: 3.4rem 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+
+  .grid { display: grid; gap: 1rem; }
+  .cards-3 { grid-template-columns: repeat(3, 1fr); }
+  .cards-2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 760px) { .cards-3, .cards-2 { grid-template-columns: 1fr; } }
+
+  .card {
+    background: linear-gradient(180deg, var(--hull2), var(--hull));
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 1.3rem;
+  }
+  .card h3 { font-size: 1.15rem; font-weight: 700; letter-spacing: -0.01em; }
+
+  /* ── Facts ────────────────────────────────────────────────────────────────── */
+  .facts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.6rem; }
+  @media (max-width: 620px) { .facts { grid-template-columns: 1fr; } }
+  .fact { border-left: 2px solid var(--sonar); padding: 0.2rem 0 0.2rem 0.9rem; }
+  .fact b { display: block; font-family: var(--mono); font-size: 1.5rem; color: var(--foam); }
+  .fact span { color: var(--mist); font-size: 0.9rem; }
+
+  /* ── Timeline de fases ────────────────────────────────────────────────────── */
+  .phases { display: flex; gap: 0.5rem; margin-top: 1.8rem; flex-wrap: wrap; }
+  .phase {
+    flex: 1 1 130px;
+    background: var(--hull);
+    border: 1px solid var(--line);
+    border-top: 3px solid var(--sonar-dim);
+    border-radius: 8px;
+    padding: 0.9rem;
+    position: relative;
+  }
+  .phase .n { font-family: var(--mono); color: var(--sonar); font-size: 0.7rem; letter-spacing: 0.15em; }
+  .phase b { display: block; margin-top: 0.3rem; text-transform: uppercase; letter-spacing: 0.02em; font-size: 0.95rem; }
+  .phase .t { font-family: var(--mono); color: var(--amber); font-size: 0.82rem; margin-top: 0.35rem; }
+  .phase small { color: var(--mist); font-size: 0.8rem; display: block; margin-top: 0.2rem; }
+
+  /* ── Modos ────────────────────────────────────────────────────────────────── */
+  .mode { position: relative; }
+  .mode .badge {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.1em;
+    padding: 0.2rem 0.55rem; border-radius: 999px; text-transform: uppercase;
+    border: 1px solid var(--line2); color: var(--mist);
+  }
+  .mode ul { list-style: none; padding: 0; margin: 1rem 0 0; }
+  .mode li { display: flex; justify-content: space-between; gap: 1rem; padding: 0.4rem 0; border-top: 1px dashed var(--line); font-size: 0.92rem; }
+  .mode li span:first-child { color: var(--mist); }
+  .mode li span:last-child { font-family: var(--mono); color: var(--foam); text-align: right; }
+  .chip-yes { color: #6fe3a6 !important; }
+  .chip-no  { color: var(--flare) !important; }
+
+  /* ── Tablero demo ─────────────────────────────────────────────────────────── */
+  .board-block { display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center; margin-top: 1.6rem; }
+  @media (max-width: 720px) { .board-block { grid-template-columns: 1fr; } }
+  .board {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 2px; background: var(--line); padding: 2px; border-radius: 6px;
+    width: min(320px, 78vw);
+  }
+  .cell { aspect-ratio: 1; border-radius: 2px; display: grid; place-items: center; font-size: 0.7rem; background: #14263b; }
+  .cell.fog  { background: #16293f; }
+  .cell.ship { background: linear-gradient(160deg, #6f9bc0, var(--ship)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+  .cell.hit  { background: radial-gradient(circle, #ff7a6e, var(--flare) 60%); }
+  .cell.miss { background: radial-gradient(circle at 50% 45%, #cfeef2, #8fc4cf 65%); }
+  .legend { display: flex; flex-direction: column; gap: 0.6rem; }
+  .legend .row { display: flex; align-items: center; gap: 0.7rem; font-size: 0.92rem; }
+  .sw { width: 20px; height: 20px; border-radius: 4px; flex: none; }
+
+  .fleet { display: flex; flex-direction: column; gap: 0.5rem; margin-top: 1.4rem; }
+  .fleet .ship-row { display: flex; align-items: center; gap: 0.8rem; }
+  .fleet .name { width: 120px; color: var(--mist); font-size: 0.9rem; }
+  .fleet .segs { display: flex; gap: 3px; }
+  .fleet .seg { width: 20px; height: 20px; border-radius: 3px; background: linear-gradient(160deg, #6f9bc0, var(--ship)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.14); }
+  .fleet .len { font-family: var(--mono); color: var(--foam); font-size: 0.85rem; }
+
+  /* ── Energía ──────────────────────────────────────────────────────────────── */
+  .energy-demo { display: flex; align-items: center; gap: 0.9rem; margin-top: 1.4rem; flex-wrap: wrap; }
+  .pips { display: flex; gap: 6px; }
+  .pip { width: 30px; height: 16px; border-radius: 4px; background: var(--hull); border: 1px solid var(--line2); }
+  .pip.on { background: linear-gradient(90deg, var(--amber), #ffe08a); border-color: var(--amber); }
+  .gain { display: flex; gap: 1.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .gain div { font-size: 0.92rem; }
+  .gain b { font-family: var(--mono); color: var(--amber); }
+
+  /* ── Poderes ──────────────────────────────────────────────────────────────── */
+  .powers { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; margin-top: 1.8rem; }
+  .power { position: relative; overflow: hidden; }
+  .power .cost {
+    position: absolute; top: 1rem; right: 1rem;
+    font-family: var(--mono); font-weight: 700; font-size: 0.9rem;
+    color: #06121f; background: var(--amber); border-radius: 999px; padding: 0.15rem 0.6rem;
+  }
+  .power .cost.free { background: var(--sonar); }
+  .power .glyph { width: 44px; height: 44px; margin-bottom: 0.7rem; }
+  .power h3 { font-size: 1.1rem; }
+  .power .kind { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sonar); }
+  .power p { font-size: 0.92rem; color: var(--foam); }
+  .power .how { font-size: 0.84rem; color: var(--mist); margin-top: 0.6rem; border-top: 1px dashed var(--line); padding-top: 0.6rem; }
+
+  /* ── Salva ────────────────────────────────────────────────────────────────── */
+  .salva-panel {
+    background: linear-gradient(180deg, #3a1620, #2a1017);
+    border: 1px solid var(--flare);
+    border-radius: 14px; padding: 1.8rem; margin-top: 1.6rem;
+  }
+  .salva-panel .row { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1rem; }
+  .salva-panel .stat b { font-family: var(--mono); font-size: 1.3rem; color: var(--foam); display: block; }
+  .salva-panel .stat span { color: #f0b8bc; font-size: 0.85rem; }
+
+  /* ── Referencia rápida ────────────────────────────────────────────────────── */
+  .ref { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem 2rem; margin-top: 1.4rem; }
+  @media (max-width: 620px) { .ref { grid-template-columns: 1fr; } }
+  .ref .item { display: flex; gap: 0.7rem; align-items: baseline; padding: 0.4rem 0; border-bottom: 1px solid var(--line); }
+  .ref .k { font-family: var(--mono); color: var(--sonar); font-size: 0.8rem; white-space: nowrap; }
+  .ref .v { color: var(--foam); font-size: 0.92rem; }
+
+  footer { text-align: center; color: var(--mist); font-size: 0.82rem; padding: 2.5rem 1.5rem; font-family: var(--mono); letter-spacing: 0.05em; }
+
+  @media (prefers-reduced-motion: reduce) { #sonar { display: none; } }
+</style>
+
+<header class="hero">
+  <canvas id="sonar" width="460" height="460" aria-hidden="true"></canvas>
+  <p class="eyebrow">Manual de combate · v1</p>
+  <h1>Battle<span class="caos">Caos</span>-Ship</h1>
+  <p class="tag">Batalla naval multijugador en tiempo real</p>
+  <p class="pitch">Hunde la flota enemiga antes de que hundan la tuya. Coloca tus barcos, dispara por
+    turnos, acumula energía y desata poderes que cambian la partida — con rondas de fuego simultáneo
+    donde todos disparan a la vez.</p>
+</header>
+
+<main>
+  <!-- EL JUEGO -->
+  <section><div class="wrap">
+    <p class="eyebrow">El juego</p>
+    <h2>Servidor autoritativo, resultado justo</h2>
+    <p class="lead">Nadie hace trampa: el servidor decide cada impacto, cada punto de energía y cada
+      cambio de fase. Tu cliente solo dibuja lo que el servidor resuelve. Tú y tu rival ven exactamente
+      el mismo estado, siempre.</p>
+    <div class="facts">
+      <div class="fact"><b>2–4</b><span>jugadores por partida, en 3 modos</span></div>
+      <div class="fact"><b>17</b><span>celdas de flota que hundir por lado</span></div>
+      <div class="fact"><b>5</b><span>poderes especiales alimentados por energía</span></div>
+    </div>
+  </div></section>
+
+  <!-- FASES -->
+  <section><div class="wrap">
+    <p class="eyebrow">Ritmo de la partida</p>
+    <h2>Las cinco fases</h2>
+    <p class="lead">Una partida fluye por estas fases. Un temporizador del servidor controla cada una;
+      si se agota, la partida avanza sola.</p>
+    <div class="phases">
+      <div class="phase"><span class="n">01</span><b>Lobby</b><small>Se llena la sala por código.</small></div>
+      <div class="phase"><span class="n">02</span><b>Colocación</b><span class="t">60 s</span><small>Pones tu flota.</small></div>
+      <div class="phase"><span class="n">03</span><b>Turnos</b><span class="t">30 s / turno</span><small>Disparan por turnos.</small></div>
+      <div class="phase"><span class="n">04</span><b>Salva</b><span class="t">8 s · cada 3 rondas</span><small>Todos disparan a la vez.</small></div>
+      <div class="phase"><span class="n">05</span><b>Fin</b><small>Una flota entera hundida.</small></div>
+    </div>
+  </div></section>
+
+  <!-- MODOS -->
+  <section><div class="wrap">
+    <p class="eyebrow">Modos de juego</p>
+    <h2>Elige tu batalla</h2>
+    <div class="grid cards-3">
+      <div class="card mode">
+        <span class="badge">1 humano</span>
+        <h3 style="margin-top:.7rem">1 vs Bot</h3>
+        <p class="lead" style="font-size:.9rem">Practica solo contra una IA que caza tus barcos.</p>
+        <ul>
+          <li><span>Tablero</span><span>10 × 10</span></li>
+          <li><span>Flota</span><span>1 por lado</span></li>
+          <li><span>Chat</span><span class="chip-no">no</span></li>
+        </ul>
+      </div>
+      <div class="card mode">
+        <span class="badge">2 humanos</span>
+        <h3 style="margin-top:.7rem">1 vs 1</h3>
+        <p class="lead" style="font-size:.9rem">Duelo clásico. Tú y tu flota contra un rival y la suya.</p>
+        <ul>
+          <li><span>Tablero</span><span>10 × 10</span></li>
+          <li><span>Flota</span><span>1 por lado</span></li>
+          <li><span>Chat</span><span class="chip-yes">sí</span></li>
+        </ul>
+      </div>
+      <div class="card mode">
+        <span class="badge">4 humanos</span>
+        <h3 style="margin-top:.7rem">2 vs 2</h3>
+        <p class="lead" style="font-size:.9rem">Dos equipos. Cada equipo comparte UN tablero donde ambos
+          compañeros colocan sus flotas.</p>
+        <ul>
+          <li><span>Tablero</span><span>13 × 13</span></li>
+          <li><span>Flota</span><span>2 por equipo (compartido)</span></li>
+          <li><span>Chat</span><span class="chip-yes">sí</span></li>
+        </ul>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- TABLERO Y FLOTA -->
+  <section><div class="wrap">
+    <p class="eyebrow">El campo de batalla</p>
+    <h2>Dos tableros, una regla</h2>
+    <p class="lead">El tablero <b>de arriba</b> es el del rival: ahí disparas. El de <b>abajo</b> es el
+      tuyo: ahí ves tu flota y dónde te atacan. Un disparo es impacto, agua o hunde un barco.</p>
+    <div class="board-block">
+      <div class="board" id="demoBoard" aria-hidden="true"></div>
+      <div class="legend">
+        <div class="row"><span class="sw" style="background:#16293f"></span> Niebla — sin explorar</div>
+        <div class="row"><span class="sw" style="background:linear-gradient(160deg,#6f9bc0,#4d7fa6)"></span> Barco (solo en tu tablero)</div>
+        <div class="row"><span class="sw" style="background:radial-gradient(circle,#ff7a6e,#ff5a5f 60%)"></span> Impacto</div>
+        <div class="row"><span class="sw" style="background:radial-gradient(circle,#cfeef2,#8fc4cf 65%)"></span> Agua (fallo)</div>
+      </div>
+    </div>
+    <div class="fleet">
+      <div class="ship-row"><span class="name">Portaaviones</span><span class="segs"><i class="seg"></i><i class="seg"></i><i class="seg"></i><i class="seg"></i><i class="seg"></i></span><span class="len">5</span></div>
+      <div class="ship-row"><span class="name">Acorazado</span><span class="segs"><i class="seg"></i><i class="seg"></i><i class="seg"></i><i class="seg"></i></span><span class="len">4</span></div>
+      <div class="ship-row"><span class="name">Crucero</span><span class="segs"><i class="seg"></i><i class="seg"></i><i class="seg"></i></span><span class="len">3</span></div>
+      <div class="ship-row"><span class="name">Submarino</span><span class="segs"><i class="seg"></i><i class="seg"></i><i class="seg"></i></span><span class="len">3</span></div>
+      <div class="ship-row"><span class="name">Destructor</span><span class="segs"><i class="seg"></i><i class="seg"></i></span><span class="len">2</span></div>
+    </div>
+  </div></section>
+
+  <!-- ENERGÍA -->
+  <section><div class="wrap">
+    <p class="eyebrow">Combustible de guerra</p>
+    <h2>Energía de equipo</h2>
+    <p class="lead">La energía es <b>compartida por equipo</b> y se gana disparando con precisión. Con
+      ella activas poderes. El tope es <b>5</b> — administra bien tus disparos.</p>
+    <div class="energy-demo">
+      <span class="eyebrow" style="color:var(--amber)">Barra</span>
+      <div class="pips"><i class="pip on"></i><i class="pip on"></i><i class="pip on"></i><i class="pip"></i><i class="pip"></i></div>
+      <span style="font-family:var(--mono);color:var(--amber)">3 / 5</span>
+    </div>
+    <div class="gain">
+      <div>Impacto a un barco &nbsp;<b>+1</b></div>
+      <div>Hundir un barco &nbsp;<b>+4</b></div>
+      <div>Agua (fallo) &nbsp;<b>+0</b></div>
+    </div>
+  </div></section>
+
+  <!-- PODERES -->
+  <section><div class="wrap">
+    <p class="eyebrow">Arsenal</p>
+    <h2>Los cinco poderes</h2>
+    <p class="lead">Se usan en tu turno (salvo la Contramedida, que es reactiva). El costo se descuenta al
+      activarlos.</p>
+    <div class="powers">
+      <div class="card power">
+        <span class="cost">2E</span>
+        <svg class="glyph" viewBox="0 0 44 44" fill="none"><g stroke="#ff5a5f" stroke-width="2"><rect x="8" y="8" width="8" height="8"/><rect x="18" y="8" width="8" height="8"/><rect x="28" y="8" width="8" height="8"/><rect x="8" y="18" width="8" height="8"/><rect x="18" y="18" width="8" height="8"/><rect x="28" y="18" width="8" height="8"/><rect x="8" y="28" width="8" height="8"/><rect x="18" y="28" width="8" height="8"/><rect x="28" y="28" width="8" height="8"/></g></svg>
+        <span class="kind">Ofensivo</span>
+        <h3>Bombardeo</h3>
+        <p>Dispara las 9 celdas de un área 3×3 del tablero rival de un solo golpe.</p>
+        <p class="how">Selecciónalo y haz clic en el centro del área en el tablero rival.</p>
+      </div>
+      <div class="card power">
+        <span class="cost">2E</span>
+        <svg class="glyph" viewBox="0 0 44 44" fill="none"><circle cx="22" cy="22" r="6" stroke="#43d6e6" stroke-width="2"/><circle cx="22" cy="22" r="13" stroke="#43d6e6" stroke-width="2" opacity=".55"/><circle cx="22" cy="22" r="20" stroke="#43d6e6" stroke-width="2" opacity=".25"/></svg>
+        <span class="kind">Información</span>
+        <h3>Sonar</h3>
+        <p>Revela en qué celdas de un área 3×3 del rival hay barcos, sin dispararles.</p>
+        <p class="how">Selecciónalo y haz clic en el centro del área a explorar.</p>
+      </div>
+      <div class="card power">
+        <span class="cost">1E</span>
+        <svg class="glyph" viewBox="0 0 44 44" fill="none"><path d="M22 6l13 5v9c0 8-5.5 14-13 18-7.5-4-13-10-13-18v-9l13-5z" stroke="#43d6e6" stroke-width="2" fill="rgba(67,214,230,.1)"/></svg>
+        <span class="kind">Defensa</span>
+        <h3>Escudo</h3>
+        <p>Protege <b>toda tu flota</b>: bloquea el próximo disparo que impactaría un barco tuyo.</p>
+        <p class="how">Se activa al instante, sin elegir celda. Se consume al bloquear un impacto.</p>
+      </div>
+      <div class="card power">
+        <span class="cost">3E</span>
+        <svg class="glyph" viewBox="0 0 44 44" fill="none"><path d="M24 4L10 24h9l-3 16 18-22h-10l4-14z" fill="#f5c451"/></svg>
+        <span class="kind">Sabotaje</span>
+        <h3>Tormenta</h3>
+        <p>Anula el siguiente turno del rival. <b>Una sola vez por partida.</b></p>
+        <p class="how">Se activa al instante. En 1v1 te da otro turno seguido.</p>
+      </div>
+      <div class="card power">
+        <span class="cost free">0E</span>
+        <svg class="glyph" viewBox="0 0 44 44" fill="none"><path d="M22 6v14M22 20l-7 18M22 20l7 18" stroke="#43d6e6" stroke-width="2"/><circle cx="22" cy="22" r="18" stroke="#43d6e6" stroke-width="2" opacity=".3"/></svg>
+        <span class="kind">Reacción</span>
+        <h3>Contramedida</h3>
+        <p>Cuando el rival te lanza Bombardeo o Sonar, tienes <b>5 s</b> para anularlo.</p>
+        <p class="how">Aparece un aviso con cuenta regresiva; pulsa para anular el ataque.</p>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- SALVA -->
+  <section><div class="wrap">
+    <p class="eyebrow">Fuego libre</p>
+    <h2>La Salva Simultánea</h2>
+    <p class="lead">Cada 3 rondas se pausan los turnos y se abre una ventana donde <b>todos disparan a la
+      vez</b>. Es el momento más caótico de la partida — puro instinto y puntería.</p>
+    <div class="salva-panel">
+      <p style="margin:0;color:#f0b8bc">Durante la Salva no hay turnos: apuntas y disparas libremente al
+        tablero rival. Solo respetas una cadencia mínima entre tus propios disparos.</p>
+      <div class="row">
+        <div class="stat"><b>8 s</b><span>dura la ventana</span></div>
+        <div class="stat"><b>0.5 s</b><span>cadencia entre tus disparos</span></div>
+        <div class="stat"><b>1.ᵒ gana la casilla</b><span>si dos apuntan igual</span></div>
+      </div>
+    </div>
+  </div></section>
+
+  <!-- REFERENCIA -->
+  <section><div class="wrap">
+    <p class="eyebrow">Referencia rápida</p>
+    <h2>Lo esencial</h2>
+    <div class="ref">
+      <div class="item"><span class="k">Tablero arriba</span><span class="v">el del rival — ahí disparas</span></div>
+      <div class="item"><span class="k">Tablero abajo</span><span class="v">el tuyo — tu flota y los ataques</span></div>
+      <div class="item"><span class="k">Turno</span><span class="v">30 s; si no actúas, pasa solo</span></div>
+      <div class="item"><span class="k">Energía</span><span class="v">por equipo, tope 5, poderes la gastan</span></div>
+      <div class="item"><span class="k">Poderes</span><span class="v">grises hasta tener energía suficiente</span></div>
+      <div class="item"><span class="k">Chat</span><span class="v">solo en 1 vs 1 y 2 vs 2</span></div>
+      <div class="item"><span class="k">Salva</span><span class="v">cada 3 rondas, 8 s, todos disparan</span></div>
+      <div class="item"><span class="k">Victoria</span><span class="v">hunde toda la flota enemiga</span></div>
+    </div>
+  </div></section>
+</main>
+
+<footer>BattleCaos-Ship — proyecto ARSW · manual de combate</footer>
+
+<script>
+  // ── Tablero demo: niebla con algunos barcos, impactos y agua ────────────────
+  (function () {
+    const board = document.getElementById('demoBoard');
+    if (!board) return;
+    const ship = new Set(['2,2','2,3','2,4','5,5','5,6','7,1','7,2','7,3']);
+    const hit  = new Set(['2,3','5,6']);
+    const miss = new Set(['0,7','4,1','8,8','1,5','6,4']);
+    for (let y = 0; y < 10; y++) for (let x = 0; x < 10; x++) {
+      const k = x + ',' + y;
+      const d = document.createElement('div');
+      let cls = 'cell fog';
+      if (hit.has(k)) cls = 'cell hit';
+      else if (miss.has(k)) cls = 'cell miss';
+      else if (ship.has(k)) cls = 'cell ship';
+      d.className = cls;
+      board.appendChild(d);
+    }
+  })();
+
+  // ── Sonar del héroe ─────────────────────────────────────────────────────────
+  (function () {
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cv = document.getElementById('sonar');
+    if (!cv) return;
+    const ctx = cv.getContext('2d');
+    const R = cv.width / 2, cx = R, cy = R;
+    const blips = Array.from({ length: 7 }, () => ({
+      a: Math.random() * Math.PI * 2, r: 40 + Math.random() * (R - 70), life: 0,
+    }));
+    let angle = 0;
+    function ring(rr) {
+      ctx.beginPath(); ctx.arc(cx, cy, rr, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(67,214,230,0.22)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+    function frame() {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      ring(R - 12); ring(R * 0.66); ring(R * 0.33);
+      // ejes
+      ctx.strokeStyle = 'rgba(67,214,230,0.12)';
+      ctx.beginPath(); ctx.moveTo(cx, 12); ctx.lineTo(cx, cv.height - 12);
+      ctx.moveTo(12, cy); ctx.lineTo(cv.width - 12, cy); ctx.stroke();
+      // barrido
+      const grad = ctx.createConicGradient ? null : null;
+      ctx.save();
+      ctx.translate(cx, cy); ctx.rotate(angle);
+      const g = ctx.createLinearGradient(0, 0, R, 0);
+      g.addColorStop(0, 'rgba(67,214,230,0.35)');
+      g.addColorStop(1, 'rgba(67,214,230,0)');
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R - 12, -0.35, 0); ctx.closePath();
+      ctx.fillStyle = g; ctx.fill();
+      ctx.restore();
+      // blips
+      for (const b of blips) {
+        const bx = cx + Math.cos(b.a) * b.r, by = cy + Math.sin(b.a) * b.r;
+        let diff = (angle - b.a) % (Math.PI * 2); if (diff < 0) diff += Math.PI * 2;
+        if (diff < 0.12) b.life = 1;
+        b.life *= 0.965;
+        if (b.life > 0.02) {
+          ctx.beginPath(); ctx.arc(bx, by, 3.2, 0, Math.PI * 2);
+          ctx.fillStyle = 'rgba(67,214,230,' + b.life.toFixed(3) + ')'; ctx.fill();
+        }
+      }
+      angle = (angle + 0.016) % (Math.PI * 2);
+      requestAnimationFrame(frame);
+    }
+    frame();
+  })();
+</script>
+</body></html>
