@@ -7,31 +7,33 @@
   border: 3px solid var(--steel-edge);
   border-radius: var(--radius);
   box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.09), 0 6px 16px rgba(0, 0, 0, 0.5);
-  padding: 1rem;
+  padding: 0.5rem 0.6rem;
+  width: 100%;
 }
 
 .title {
-  font-size: 1.05rem;
-  margin-bottom: 0.7rem;
+  font-size: 0.82rem;
+  margin-bottom: 0.4rem;
   color: var(--gold);
   text-shadow: 1px 1px 0 #3a2a10;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
 }
 
+/* Los 4 poderes en UNA sola fila (antes 2×2) para ocupar menos alto. */
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.6rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
 }
 
-/* Cada poder = módulo de máquina: placa de latón + palanca debajo */
+/* Cada poder = módulo de máquina: placa de latón + palanca debajo (compacto). */
 .power {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.4rem 0.55rem;
+  gap: 0.25rem;
+  padding: 0.3rem 0.25rem 0.35rem;
   /* anula el latón global del botón: el módulo es acero, la PLACA es el latón */
   background: linear-gradient(180deg, #2c333a, #21262c);
   border: 2px solid var(--steel-edge);
@@ -57,22 +59,24 @@
 
 .name {
   font-weight: 700;
-  font-size: 0.92rem;
+  font-size: 0.72rem;
   color: var(--brass-text);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+  text-align: center;
+  line-height: 1.05;
 }
 
 .cost {
-  font-size: 0.82rem;
+  font-size: 0.68rem;
   color: #4a3010;
 }
 
-/* ── Palanca ────────────────────────────────────────────────────────────────── */
+/* ── Palanca (compacta) ─────────────────────────────────────────────────────── */
 .leverSlot {
   position: relative;
-  width: 12px;
-  height: 38px;
+  width: 11px;
+  height: 24px;
   background: #101418;
   border-radius: 6px;
   box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.85), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
@@ -80,10 +84,10 @@
 
 .leverStick {
   position: absolute;
-  left: 4px;
-  top: 16px;
+  left: 3.5px;
+  top: 10px;
   width: 4px;
-  height: 16px;
+  height: 11px;
   background: linear-gradient(90deg, #8a6a3b, #5b4426);
   transition: top 0.15s ease, height 0.15s ease;
 }
@@ -91,9 +95,9 @@
 .leverKnob {
   position: absolute;
   left: -2px;
-  top: 24px;
-  width: 16px;
-  height: 16px;
+  top: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #e6c37a, #a07c42 55%, #6e5330);
   border: 2px solid #241a0c;
@@ -102,7 +106,7 @@
 
 /* Palanca ARRIBA cuando el poder está seleccionado */
 .active .leverStick {
-  top: 6px;
+  top: 4px;
 }
 
 .active .leverKnob {

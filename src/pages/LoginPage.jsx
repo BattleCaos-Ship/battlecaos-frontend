@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { decodeJwt } from '../hooks/useAuth';
+import { setSession } from '../store/authStore';
+import { loginGoogle, registrarLocal, loginLocal } from '../api/auth';
+import { GATEWAY_URL, GOOGLE_CLIENT_ID, googleConfigurado } from '../api/config';
+import { LOCAL_AUTH_ERRORS } from '../constants/copy';
 import PixelBackdrop from '../components/PixelBackdrop/PixelBackdrop';
 import styles from './LoginPage.module.css';
-
-const AUTH_URL = import.meta.env.VITE_AUTH_URL ?? 'http://localhost:3001';
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL ?? 'http://localhost:3000';
 
 export default function LoginPage() {
   const [status, setStatus] = useState('idle'); // idle | loading | error
@@ -16,16 +16,8 @@ export default function LoginPage() {
 
   function onGoogleResponse(response) {
     setStatus('loading');
-    fetch(`${AUTH_URL}/auth/google`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ idToken: response.credential }),
-    })
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('token_invalido'))))
-      .then(({ token }) => {
-        localStorage.setItem('token', token);
-        navigate('/lobby');
-      })
+    loginGoogle(response.credential)
+      .then(({ token }) => { setSession(token); navigate('/lobby'); })
       .catch(() => {
         setErrorMsg('No se pudo iniciar sesión. Inténtalo de nuevo.');
         setStatus('error');
@@ -70,7 +62,7 @@ export default function LoginPage() {
       return;
     }
     setDevError('');
-    localStorage.setItem('token', t);
+    setSession(t);
     navigate('/lobby');
   }
 
@@ -80,42 +72,23 @@ export default function LoginPage() {
   const [localError, setLocalError] = useState('');
   const [enviando, setEnviando] = useState(false);
 
-  const LOCAL_ERRORS = {
-    email_invalido: 'Correo no válido.',
-    password_corta: 'La contraseña debe tener al menos 6 caracteres.',
-    apodo_invalido: 'El apodo debe tener entre 2 y 20 caracteres.',
-    email_en_uso: 'Ya existe una cuenta con ese correo. Inicia sesión.',
-    credenciales_invalidas: 'Correo o contraseña incorrectos.',
-    credenciales_requeridas: 'Escribe tu correo y contraseña.',
-  };
-
   async function enviarLocal(e) {
     e.preventDefault();
     setLocalError('');
     setEnviando(true);
-    const endpoint = modo === 'register' ? '/auth/register' : '/auth/login';
-    const cuerpo = modo === 'register'
-      ? { email: form.email, password: form.password, apodo: form.apodo }
-      : { email: form.email, password: form.password };
     try {
-      const r = await fetch(`${AUTH_URL}${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(cuerpo),
-      });
-      const data = await r.json().catch(() => ({}));
-      if (!r.ok) { setLocalError(LOCAL_ERRORS[data.error] ?? 'No se pudo completar. Inténtalo de nuevo.'); return; }
-      localStorage.setItem('token', data.token);
+      const { token } = modo === 'register'
+        ? await registrarLocal({ email: form.email, password: form.password, apodo: form.apodo })
+        : await loginLocal({ email: form.email, password: form.password });
+      setSession(token);
       navigate('/lobby');
-    } catch {
-      setLocalError('No hay conexión con el servicio de autenticación (puerto 3001).');
+    } catch (err) {
+      // err.codigo es el código del backend (ApiError) → texto legible de constants/copy.
+      setLocalError(LOCAL_AUTH_ERRORS[err.codigo] ?? LOCAL_AUTH_ERRORS.error_desconocido);
     } finally {
       setEnviando(false);
     }
   }
-
-  // Google solo está disponible si hay un client_id real configurado.
-  const googleConfigurado = GOOGLE_CLIENT_ID && !GOOGLE_CLIENT_ID.startsWith('tu-client-id');
 
   const location = useLocation();
   const sesionExpirada = location.state?.motivo === 'sesion_expirada';

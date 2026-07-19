@@ -275,8 +275,8 @@ export default function Board({
           <div className={styles.overlay}>
             {ships.map((s) => (
               <ShipSprite
-                key={s.id}
-                tipo={s.id}
+                key={s.key ?? s.id}
+                tipo={s.tipo ?? s.id}
                 horizontal={s.horizontal}
                 long={span(s.size)}
                 short="var(--cell-size)"

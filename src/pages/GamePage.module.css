@@ -1,7 +1,14 @@
 .wrap {
-  max-width: 1100px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 1.2rem 1.5rem 2rem;
+  padding: 0.8rem 1.2rem 1.5rem;
+}
+
+/* Nombre visible de la sala (arriba, junto a la fase). */
+.roomName {
+  font-size: 0.85rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
 }
 
 .centered {
@@ -118,12 +125,73 @@
   margin-bottom: 0.8rem;
 }
 
+/* ── Layout HORIZONTAL en 3 filas: jugadores+poderes / tableros lado a lado /
+     chat+voz. Todo compacto para verse SIN scroll en una pantalla normal. ── */
 .layout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-top: 0.6rem;
+}
+
+/* Fila superior: jugadores (izq) + energía/poderes (der). */
+.topRow {
   display: grid;
-  grid-template-columns: 1fr 280px;
-  gap: 1.5rem;
-  align-items: start;
-  margin-top: 1rem;
+  grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+  gap: 0.8rem;
+  align-items: stretch;
+}
+.playersBox,
+.powersBox {
+  padding: 0.5rem 0.7rem;
+  min-width: 0;
+}
+.powersBox {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+.powersIdle {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+}
+
+.mainCol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Fila de juego: tableros (izq, crecen) + columna de chats (der, ancho fijo).
+   El chat de texto queda AL LADO de los tableros y la voz compacta debajo del chat —
+   todo visible en horizontal sin scroll. */
+.gameRow {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+}
+.gameRow > .mainCol { flex: 1; }
+
+.chatCol {
+  width: 290px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  min-width: 0;
+}
+.chatCol > * { width: 100%; }
+
+@media (max-width: 900px) {
+  .topRow { grid-template-columns: 1fr; }
+}
+/* Pantallas angostas: la columna de chats cae DEBAJO de los tableros (ancho completo). */
+@media (max-width: 1000px) {
+  .gameRow { flex-direction: column; }
+  .chatCol { width: 100%; }
 }
 
 @media (max-width: 860px) {
@@ -132,15 +200,17 @@
   }
 }
 
-.mainCol {
-  min-width: 0;
-}
 
+/* Tableros LADO A LADO: propio (izq) y rival (der). Celdas reducidas para que
+   ambos quepan sin scroll (en 2v2 el tablero es 13×13). */
 .boards {
+  --cell-size: clamp(1.1rem, 2.9vw, 1.85rem);
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  flex-direction: row;
+  gap: 1rem;
   align-items: flex-start;
+  justify-content: center;
+  flex-wrap: wrap; /* pantallas angostas: caen en columna */
 }
 
 .waiting {
@@ -183,3 +253,77 @@
   padding: 0.4rem 0.7rem;
   max-width: max-content;
 }
+
+/* Timer + botón de abandonar juntos a la derecha del encabezado. */
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.leaveBtn {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.7rem;
+  background: linear-gradient(180deg, #6b2a22, #4a1d17);
+  border: 1px solid #8a3a2e;
+  color: var(--color-text, #e8e2d0);
+}
+.leaveBtn:hover {
+  filter: brightness(1.15);
+}
+
+/* ── Overlay de FIN de partida (resultado + revancha en la misma sala) ── */
+.finOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(6, 10, 16, 0.72);
+  backdrop-filter: blur(3px);
+  animation: finFade 0.25s ease-out;
+}
+@keyframes finFade { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .finOverlay { animation: none; } }
+
+.finCard {
+  text-align: center;
+  padding: 1.6rem 1.8rem;
+  max-width: 420px;
+  width: min(92vw, 420px);
+  border-radius: var(--radius);
+}
+.finTitle {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+}
+.finSub {
+  margin: 0 0 1.2rem;
+  color: var(--text-dim);
+}
+.finActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.finPrimary,
+.finSecondary {
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.finPrimary {
+  background: linear-gradient(180deg, #2a6b3a, #1a4a28);
+  border: 1px solid #3a8a4e;
+  color: var(--color-text, #e8e2d0);
+  font-weight: 600;
+}
+.finSecondary {
+  background: var(--bg-panel-2, rgba(20,28,38,0.8));
+  border: 1px solid var(--border-soft);
+  color: var(--text-dim);
+}
+.finPrimary:hover,
+.finSecondary:hover { filter: brightness(1.15); }

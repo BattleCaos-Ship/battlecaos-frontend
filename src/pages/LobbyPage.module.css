@@ -240,3 +240,24 @@
 .startBtn:disabled { filter: grayscale(0.6) brightness(0.7); cursor: not-allowed; }
 
 .waitHost { color: var(--text-dim); font-size: 0.9rem; }
+
+/* Botón para ver una partida como espectador (secundario, junto a "Unirse"). */
+.spectateBtn {
+  margin-top: 0.4rem;
+  opacity: 0.9;
+}
+
+/* Intercambio de bandos cuando el equipo destino está lleno (2v2). */
+.swapBtn {
+  margin-left: 0.5rem;
+  padding: 0 0.45rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Nombre visible de la sala en la sala de espera. */
+.roomName {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+  color: var(--color-gold, #d8b64a);
+}

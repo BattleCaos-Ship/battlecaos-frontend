@@ -7,7 +7,7 @@ export default function SalvoBanner({ remaining, notice }) {
     <div className={styles.banner}>
       <div className={styles.left}>
         <strong className={styles.title}>¡SALVA SIMULTÁNEA!</strong>
-        <span className={styles.sub}>Todos disparan a la vez · cadencia mínima 0.5s</span>
+        <span className={styles.sub}>Todos disparan a la vez · fuego rápido — ¡haz clic sin parar!</span>
       </div>
       {remaining != null && <div className={styles.count}>{Math.max(0, remaining / 1000).toFixed(1)}s</div>}
       {notice && <div className={styles.notice}>{notice}</div>}

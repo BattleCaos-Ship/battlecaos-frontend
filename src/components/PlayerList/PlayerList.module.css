@@ -1,8 +1,14 @@
+/* 2 columnas para ocupar menos alto (antes una sola columna larga). En pantallas
+   angostas cae a una columna. */
 .list {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+@media (max-width: 520px) {
+  .list { grid-template-columns: 1fr; }
 }
 
 .empty {
@@ -10,15 +16,16 @@
   font-size: 0.9rem;
 }
 
-/* Fila del tablón verde oscuro (mockup: pizarra de jugadores) */
+/* Fila del tablón verde oscuro (mockup: pizarra de jugadores) — compacta. */
 .item {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.4rem;
   background: #16241f;
   border: 2px solid var(--steel-edge);
   border-radius: var(--radius-sm);
-  padding: 0.5rem 0.8rem;
+  padding: 0.3rem 0.5rem;
+  min-width: 0;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
@@ -32,11 +39,11 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
+  width: 1.3rem;
+  height: 1.3rem;
   border-radius: 50%;
   font-weight: 800;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
   color: #06121f;
   flex-shrink: 0;
 }
@@ -58,13 +65,14 @@
 }
 
 .rel {
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 0.15rem 0.4rem;
+  letter-spacing: 0.03em;
+  padding: 0.1rem 0.3rem;
   border-radius: 999px;
   border: 1px solid var(--border-soft);
   color: var(--text-dim);
+  flex-shrink: 0;
 }
 
 .rel[data-rel='tú'] {

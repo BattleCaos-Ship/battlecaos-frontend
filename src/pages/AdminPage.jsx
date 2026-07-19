@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { obtenerKpis } from '../api/kpis';
 import PixelBackdrop from '../components/PixelBackdrop/PixelBackdrop';
 import styles from './AdminPage.module.css';
-
-const GATEWAY_URL = import.meta.env.VITE_GATEWAY_URL ?? 'http://localhost:3000';
 
 export default function AdminPage() {
   const [kpis, setKpis] = useState(null);
@@ -11,14 +10,13 @@ export default function AdminPage() {
 
   useEffect(() => {
     let cancelled = false;
-    const fetchKpis = () => {
-      fetch(`${GATEWAY_URL}/kpis`)
-        .then((r) => (r.ok ? r.json() : Promise.reject()))
+    const cargar = () => {
+      obtenerKpis()
         .then((data) => !cancelled && (setKpis(data), setError(false)))
         .catch(() => !cancelled && setError(true));
     };
-    fetchKpis();
-    const id = setInterval(fetchKpis, 5000);
+    cargar();
+    const id = setInterval(cargar, 5000);
     return () => {
       cancelled = true;
       clearInterval(id);

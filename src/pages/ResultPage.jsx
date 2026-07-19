@@ -1,14 +1,19 @@
+import { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { clearGameStateCache } from '../hooks/useGameState';
 import PixelBackdrop from '../components/PixelBackdrop/PixelBackdrop';
+import { MODO_LABEL } from '../constants/copy';
 import styles from './ResultPage.module.css';
-
-const MODO_LABEL = { '1v1': '1 vs 1', '1v1-bot': '1 vs Bot', '2v2': '2 vs 2' };
 
 export default function ResultPage() {
   const { state } = useLocation();
   const navigate = useNavigate();
   const { logout } = useAuth();
+
+  // Invalida el caché del estado de juego: sin esto, "jugar de nuevo" leería
+  // el estado FIN de esta partida y GamePage volvería aquí apenas montar.
+  useEffect(() => { clearGameStateCache(); }, []);
 
   const winner = state?.winner;
   const modo = state?.modo;

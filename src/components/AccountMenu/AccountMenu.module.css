@@ -75,3 +75,32 @@
   cursor: pointer;
 }
 .logout:hover { filter: brightness(1.1); }
+
+/* Edición de apodo en el menú de cuenta. */
+.editBtn {
+  margin-left: 0.4rem;
+  padding: 0 0.3rem;
+  font-size: 0.8rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.editRow {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+}
+.editRow input {
+  width: 9rem;
+  font-size: 0.85rem;
+  padding: 0.2rem 0.4rem;
+}
+.editRow button {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.8rem;
+}
+.error {
+  margin: 0.3rem 0 0;
+  font-size: 0.78rem;
+  color: #e0705a;
+}

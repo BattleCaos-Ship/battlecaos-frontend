@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from './Chat.module.css';
 
-// battlecaos-chat aún no existe: emitimos chat:mensaje igual (no rompe nada) y
-// escuchamos chat:history/chat:message por si más adelante el servicio se conecta.
-export default function Chat({ socket, codigo }) {
+// Chat de texto con CANALES (2v2): switch Equipo 🔒 / Público 🌐.
+//  - Equipo: solo tus compañeros lo ven (enrutado en el servidor).
+//  - Público: toda la sala; muestra además quiénes están conectados.
+// En 1v1 no hay switch: todo es público (se habla con el rival).
+export default function Chat({ socket, codigo, titulo = 'Chat', conCanales = false, jugadores = [], miId }) {
   const [messages, setMessages] = useState([]);
   const [text, setText] = useState('');
+  const [canal, setCanal] = useState(conCanales ? 'equipo' : 'publico');
+  const [verMas, setVerMas] = useState(false); // compacto (3 últimos) ↔ expandido (6 + scroll)
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -20,37 +24,79 @@ export default function Chat({ socket, codigo }) {
     };
   }, [socket]);
 
+  // Mensajes visibles según la pestaña (el servidor ya filtró lo que NO me toca ver).
+  const visibles = conCanales
+    ? messages.filter((m) => (m.canal ?? 'equipo') === canal)
+    : messages;
+
+  // Compacto: solo los últimos 3 (sin scroll). Expandido: todos, con scroll (caja de ~6 filas).
+  const mostrados = verMas ? visibles : visibles.slice(-3);
+
   useEffect(() => {
     listRef.current?.scrollTo(0, listRef.current.scrollHeight);
-  }, [messages]);
+  }, [mostrados.length, canal, verMas]);
 
   const send = () => {
     const t = text.trim();
     if (!t) return;
-    socket?.emit('chat:mensaje', { codigo, text: t });
+    socket?.emit('chat:mensaje', { codigo, text: t, canal });
     setText('');
   };
 
+  const conectados = jugadores.filter((j) => !j.esBot && j.conectado !== false);
+
   return (
     <aside className={styles.chat}>
-      <h3 className={styles.title}>Chat</h3>
-      <div className={styles.list} ref={listRef}>
-        {messages.length === 0 ? (
+      <div className={styles.header}>
+        <h3 className={styles.title}>{titulo}</h3>
+        {conCanales && (
+          <div className={styles.switch} role="tablist">
+            <button
+              role="tab"
+              className={canal === 'equipo' ? styles.tabActive : styles.tab}
+              onClick={() => setCanal('equipo')}
+            >
+              🔒 Equipo
+            </button>
+            <button
+              role="tab"
+              className={canal === 'publico' ? styles.tabActive : styles.tab}
+              onClick={() => setCanal('publico')}
+            >
+              🌐 Público
+            </button>
+          </div>
+        )}
+      </div>
+
+      {conCanales && canal === 'publico' && (
+        <p className={styles.connected} title="Jugadores conectados en el chat público">
+          Conectados: {conectados.map((j) => (j.id === miId ? `${j.name} (tú)` : j.name)).join(', ') || '—'}
+        </p>
+      )}
+
+      <div className={`${styles.list} ${verMas ? styles.listExpanded : styles.listCompact}`} ref={listRef}>
+        {mostrados.length === 0 ? (
           <p className={styles.empty}>Sin mensajes.</p>
         ) : (
-          messages.map((m, i) => (
+          mostrados.map((m, i) => (
             <p key={i} className={styles.msg}>
               <span className={styles.sender}>{m.senderName ?? 'Jugador'}:</span> {m.text}
             </p>
           ))
         )}
       </div>
+      {visibles.length > 3 && (
+        <button className={styles.verMas} onClick={() => setVerMas((v) => !v)}>
+          {verMas ? 'Ver menos ▴' : `Ver todos (${visibles.length}) ▾`}
+        </button>
+      )}
       <div className={styles.inputRow}>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && send()}
-          placeholder="Escribe un mensaje…"
+          placeholder={conCanales && canal === 'equipo' ? 'Mensaje a tu equipo…' : 'Escribe un mensaje…'}
         />
         <button onClick={send}>Enviar</button>
       </div>
