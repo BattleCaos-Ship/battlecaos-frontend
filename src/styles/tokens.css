@@ -1,0 +1,55 @@
+:root {
+  /* ── Pixel-art naval (mockups Ideas_actualizacion_front) ─────────────────── */
+
+  /* Acero y latón */
+  --steel-hi:      #4d565f;
+  --steel:         #343b43;
+  --steel-dark:    #262c33;
+  --steel-edge:    #15181d;
+  --brass-hi:      #d9b06a;
+  --brass:         #a07c42;
+  --brass-dark:    #6e5330;
+  --brass-text:    #241a0c;
+  --gold:          #e8b667;
+  --nixie-bg:      #1a120b;
+  --nixie:         #ff9e3d;
+  --radar:         #46d178;
+
+  /* Colores de celda del tablero */
+  --color-water:   #1a3a5c;
+  --color-hit:     #d9542f;
+  --color-miss:    #2e4e57;
+  --color-ship:    #5f6d7a;
+  --color-sunk:    #6e1d1d;
+  --color-fog:     #2b2d42;
+  --color-select:  #e3b25f;
+  --color-energy:  #f4d03f;
+  --color-shield:  #48cae4;
+  --color-sonar:   #2e8f5b;
+
+  /* Colores de interfaz */
+  --bg-deep:       #0b1118;
+  --bg-panel:      #2e343b;
+  --bg-panel-2:    #22272d;
+  --border-soft:   #15181d;
+  --text-main:     #e9e2d0;
+  --text-dim:      #b39a72;
+  --accent:        #4ea8de;
+  --accent-strong: #5fd3e8;
+  --danger:        #e05a47;
+  --success:       #59c37e;
+  --warning:       #e3a34f;
+
+  /* Equipos */
+  --team-a:        #4ea8de;
+  --team-b:        #e07a5f;
+
+  /* Tamaños */
+  --cell-size:     2.5rem;
+  --radius:        8px;
+  --radius-sm:     4px;
+
+  /* Fuentes pixel */
+  --font-pixel:    'VT323', 'Consolas', monospace;
+  --font-display:  'Press Start 2P', 'VT323', monospace;
+}

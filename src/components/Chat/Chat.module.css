@@ -1,0 +1,116 @@
+.chat {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 0.8rem;
+  height: 320px;
+  /* Ancho fluido: llena la columna donde viva (la chatCol de GamePage mide ~290px;
+     el ancho fijo de 260px dejaba un hueco y peleaba con el layout). */
+  width: 100%;
+  min-width: 0;
+}
+
+.title {
+  font-size: 0.9rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.6rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.4rem;
+}
+/* Compacto: últimos 3 mensajes, sin scroll (crece con el contenido). */
+.listCompact {
+  overflow: visible;
+}
+/* Expandido: caja de ~6 filas con scroll para ver todo el historial. */
+.listExpanded {
+  max-height: 9rem; /* ~6 mensajes */
+  overflow-y: auto;
+}
+
+.verMas {
+  align-self: flex-start;
+  margin-bottom: 0.4rem;
+  padding: 0.12rem 0.5rem;
+  font-size: 0.72rem;
+  background: transparent;
+  border: 1px solid var(--color-shield, #3a6ea5);
+  border-radius: 4px;
+  color: var(--color-shield, #6aa0d8);
+  cursor: pointer;
+}
+.verMas:hover { background: rgba(58, 110, 165, 0.15); }
+
+.empty {
+  color: var(--text-dim);
+  font-size: 0.85rem;
+}
+
+.msg {
+  font-size: 0.88rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.sender {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.inputRow input {
+  flex: 1;
+  min-width: 0;
+}
+
+.inputRow button {
+  padding: 0.55rem 0.8rem;
+}
+
+/* Switch de canal Equipo/Público (2v2) + lista de conectados del público. */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.switch {
+  display: flex;
+  gap: 2px;
+  border: 1px solid var(--color-shield, #3a6ea5);
+  border-radius: 5px;
+  overflow: hidden;
+}
+.tab, .tabActive {
+  font-size: 0.72rem;
+  padding: 0.18rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: #9aa4b0;
+  cursor: pointer;
+}
+.tabActive {
+  background: var(--color-shield, #3a6ea5);
+  color: #fff;
+}
+.connected {
+  margin: 0;
+  font-size: 0.72rem;
+  color: #9aa4b0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
