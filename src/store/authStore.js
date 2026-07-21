@@ -32,9 +32,21 @@ export function isExpired(profile = getProfile()) {
   return profile?.exp ? profile.exp * 1000 < Date.now() : false;
 }
 
+// Un JWT es exactamente 3 segmentos base64url separados por puntos. Validamos la FORMA antes
+// de persistir (la firma ya la verifica el servidor): así nunca guardamos en el navegador una
+// cadena arbitraria venida de una respuesta manipulada o de un pegado del usuario.
+const FORMATO_JWT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/;
+
+export function esTokenBienFormado(token) {
+  return typeof token === 'string' && token.length <= 4096 && FORMATO_JWT.test(token);
+}
+
 // Guarda el token de una nueva sesión (login/registro/cambio de apodo).
+// Devuelve false si el token no tiene forma de JWT — quien llama decide qué mostrar.
 export function setSession(token) {
+  if (!esTokenBienFormado(token)) return false;
   localStorage.setItem('token', token);
+  return true;
 }
 
 // Cierra la sesión: borra el token y desconecta el socket compartido (persiste entre páginas).

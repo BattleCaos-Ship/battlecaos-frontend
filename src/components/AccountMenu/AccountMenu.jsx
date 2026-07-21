@@ -44,7 +44,7 @@ export default function AccountMenu() {
       if (!nuevoToken) throw new Error('error');
       // Reemplazar el token: el nuevo JWT trae el apodo actualizado. Recargamos para que
       // toda la app (socket incluido) use la sesión con el nombre nuevo.
-      setSession(nuevoToken);
+      if (!setSession(nuevoToken)) throw new Error('token_mal_formado');
       window.location.reload();
     } catch (err) {
       setError(err.codigo === 'apodo_invalido' ? 'Apodo inválido.' : 'No se pudo guardar. Intenta de nuevo.');

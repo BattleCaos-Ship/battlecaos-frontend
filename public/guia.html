@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head><body>
 <title>BattleCaos-Ship · Manual de combate</title>
+</head><body>
 <style>
   /* ── Mundo de aguas profundas: tema oscuro deliberado (juego naval) ───────── */
   :root {
@@ -457,8 +457,9 @@
     if (!cv) return;
     const ctx = cv.getContext('2d');
     const R = cv.width / 2, cx = R, cy = R;
+    const rnd = () => crypto.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
     const blips = Array.from({ length: 7 }, () => ({
-      a: Math.random() * Math.PI * 2, r: 40 + Math.random() * (R - 70), life: 0,
+      a: rnd() * Math.PI * 2, r: 40 + rnd() * (R - 70), life: 0,
     }));
     let angle = 0;
     function ring(rr) {
@@ -473,7 +474,6 @@
       ctx.beginPath(); ctx.moveTo(cx, 12); ctx.lineTo(cx, cv.height - 12);
       ctx.moveTo(12, cy); ctx.lineTo(cv.width - 12, cy); ctx.stroke();
       // barrido
-      const grad = ctx.createConicGradient ? null : null;
       ctx.save();
       ctx.translate(cx, cy); ctx.rotate(angle);
       const g = ctx.createLinearGradient(0, 0, R, 0);

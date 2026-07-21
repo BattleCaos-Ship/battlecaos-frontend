@@ -1,5 +1,7 @@
 # battlecaos-frontend
 
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=BattleCaos-Ship_battlecaos-frontend&metric=alert_status)](https://sonarcloud.io/summary/overall?id=BattleCaos-Ship_battlecaos-frontend) [![Security](https://sonarcloud.io/api/project_badges/measure?project=BattleCaos-Ship_battlecaos-frontend&metric=security_rating)](https://sonarcloud.io/summary/overall?id=BattleCaos-Ship_battlecaos-frontend) [![Reliability](https://sonarcloud.io/api/project_badges/measure?project=BattleCaos-Ship_battlecaos-frontend&metric=reliability_rating)](https://sonarcloud.io/summary/overall?id=BattleCaos-Ship_battlecaos-frontend) [![Maintainability](https://sonarcloud.io/api/project_badges/measure?project=BattleCaos-Ship_battlecaos-frontend&metric=sqale_rating)](https://sonarcloud.io/summary/overall?id=BattleCaos-Ship_battlecaos-frontend)
+
 Cliente web (SPA) de **BattleCaos-Ship** — batalla naval multijugador en tiempo real.
 React 18 + Vite + socket.io-client. Se conecta al Gateway por WebSocket y al Auth por HTTP.
 
