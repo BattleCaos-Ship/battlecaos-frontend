@@ -22,7 +22,7 @@ import styles from './GamePage.module.css';
 // Reconstruye FORMAS de barco {key, tipo, size, x, y, horizontal} desde el mapa
 // `barcos` del tablero de equipo ({ id: [[x,y],...] }, ids `${playerId}_${tipo}`).
 // Con las formas se dibujan los SPRITES pixel-art (nunca cuadros grises).
-function shapesFromBarcos(barcos) {
+export function shapesFromBarcos(barcos) {
   return Object.entries(barcos ?? {}).map(([id, cells]) => {
     const xs = cells.map((c) => c[0]);
     const ys = cells.map((c) => c[1]);
@@ -46,7 +46,7 @@ const SHIP_NAMES = {
 
 // Encuentra un grupo de celdas 'sunk' conectadas (4-direcciones) que contenga
 // al menos una celda nueva, y devuelve el tamaño del grupo + sus coordenadas.
-function findNewSunkGroup(cells, prevCells) {
+export function findNewSunkGroup(cells, prevCells) {
   const newSunk = new Set();
   for (const [key, val] of Object.entries(cells)) {
     if (val === 'sunk' && prevCells?.[key] !== 'sunk') {
@@ -108,7 +108,7 @@ const SALVO_EMIT_MS = 260;
 // 'ship' por relleno solo se usan como fallback cuando no conocemos las formas — §3.6.)
 
 // Los tableros vienen keyed por EQUIPO ('A'/'B'). El rival es el del equipo contrario.
-function rivalBoardCells(gameState, miId) {
+export function rivalBoardCells(gameState, miId) {
   const boards = gameState?.boards ?? {};
   const miEquipo = gameState?.jugadores?.find((j) => j.id === miId)?.equipo;
   const enemigo = miEquipo === 'A' ? 'B' : 'A';
