@@ -264,8 +264,17 @@ export default function Board({
                 key={key}
                 className={`${styles.cell} ${styles[state] ?? ''}`}
                 onClick={interactive ? () => onCellClick?.(x, y) : undefined}
+                // Una celda con role="button" debe poder dispararse con el teclado, no solo
+                // con el ratón: Enter y Espacio son las teclas que se esperan de un botón.
+                onKeyDown={interactive ? (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onCellClick?.(x, y);
+                  }
+                } : undefined}
                 onMouseEnter={onCellHover ? () => onCellHover(x, y) : undefined}
                 role={interactive ? 'button' : undefined}
+                tabIndex={interactive ? 0 : undefined}
                 aria-label={interactive ? `Celda ${x},${y}` : undefined}
               />
             );

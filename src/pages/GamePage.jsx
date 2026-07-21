@@ -427,16 +427,15 @@ export default function GamePage() {
     setTimeout(() => setSunkShipMsg(null), 4000);
   }, [gameState, profile?.sub]);
 
-  // Fin de la partida: en vez de navegar directo al resultado, mostramos un OVERLAY dentro
-  // de la partida (más abajo) con opción de REVANCHA en la misma sala. Así no se pierde el
-  // socket ni la sala. Al pedir revancha, el estado vuelve a COLOCACION y el overlay se oculta
-  // solo (depende de fase === 'FIN'). El botón "Ver resultado y salir" sí navega a /result.
-  function irAResultado() {
-    const miEquipo = gameState?.jugadores?.find((j) => j.id === profile?.sub)?.equipo ?? null;
-    navigate('/result', {
-      state: { winner: gameState?.winner, modo: gameState?.modo, duracion: gameState?.duracion, miEquipo },
-    });
-  }
+  // Fin de la partida: se muestra un OVERLAY dentro de la propia partida (más abajo) con el
+  // resultado y la opción de REVANCHA en la misma sala. Así no se pierde el socket ni la sala.
+  // Al pedir revancha el estado vuelve a COLOCACION y el overlay se oculta solo (depende de
+  // fase === 'FIN').
+  //
+  // Antes existía además una pantalla /result aparte ("Ver resultado y salir") que repetía lo
+  // mismo —quién ganó— y añadía un segundo menú de botones. Se eliminó: el overlay ya dice el
+  // resultado, y el paso extra solo servía para sacar al jugador de la sala.
+
   // "Volver a la sala": navega al LOBBY de la MISMA sala. El LobbyPage, al montar con
   // rejoinCodigo, emite room:volver → el jugador reingresa (o reinicia la sala si es el primero).
   // NO se reinicia el juego aquí: solo se inicia cuando el anfitrión pulse "Comenzar" en el lobby.
@@ -766,8 +765,10 @@ export default function GamePage() {
         <div className={styles.finOverlay} role="dialog" aria-modal="true">
           <div className={`${styles.finCard} metal`}>
             <h2 className={styles.finTitle}>
-              {gameState.winner && miEquipo === gameState.winner ? '🏆 ¡Ganaste!'
-                : gameState.winner ? `Gana el equipo ${gameState.winner}` : 'Partida terminada'}
+              {!gameState.winner ? 'Partida terminada'
+                : miEquipo === gameState.winner ? '🏆 ¡Ganaste!'
+                : esEspectador ? `Gana el equipo ${gameState.winner}`
+                : '💥 Derrota'}
             </h2>
             <p className={styles.finSub}>
               {esEspectador ? 'La partida ha terminado.' : '¿Otra ronda en esta misma sala?'}
@@ -775,12 +776,9 @@ export default function GamePage() {
             <div className={styles.finActions}>
               {!esEspectador && (
                 <button className={styles.finPrimary} onClick={volverASala}>
-                  🔄 Volver a la sala
+                  🔄 Jugar otra vez
                 </button>
               )}
-              <button className={styles.finSecondary} onClick={irAResultado}>
-                📊 Ver resultado y salir
-              </button>
               <button className={styles.finSecondary} onClick={abandonar}>
                 🚪 Elegir otro modo
               </button>

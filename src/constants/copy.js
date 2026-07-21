@@ -1,6 +1,6 @@
 // Textos de la UI en UN solo lugar: labels de modos/fases y el mapeo de códigos de error del
 // backend → texto legible para el usuario. Antes estaban repartidos por LobbyPage, LoginPage,
-// GamePage y ResultPage. Centralizarlos facilita revisar la voz del producto y traducir.
+// GamePage y el overlay de fin de partida. Centralizarlos facilita revisar la voz del producto y traducir.
 
 export const MODO_LABEL = {
   '1v1':     '1 vs 1',
@@ -28,6 +28,7 @@ export const ROOM_ERRORS = {
   partida_no_iniciada:  'Esa sala aún está en el lobby — no hay partida que ver todavía.',
   solo_anfitrion:       'Solo el anfitrión puede comenzar la partida.',
   faltan_jugadores:     'Faltan jugadores o los bandos no están completos.',
+  jugador_no_esta:      'Ya no estás en esa sala.',
   sin_respuesta:        'El servidor no respondió. ¿Están corriendo los backends (levantar-todo.ps1) y conectados a Kafka?',
 };
 
@@ -46,6 +47,7 @@ export const LOCAL_AUTH_ERRORS = {
 // Errores durante la partida (game:error).
 export const GAME_ERRORS = {
   fase_incorrecta:            'No puedes hacer eso en esta fase.',
+  fase_invalida:             'La partida quedó en un estado inesperado. Vuelve al lobby.',
   turno_pausado:             'El turno está en pausa.',
   no_es_tu_turno:            'No es tu turno.',
   tablero_no_disponible:     'Tablero no disponible aún.',

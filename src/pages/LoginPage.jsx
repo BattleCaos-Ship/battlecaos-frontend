@@ -17,7 +17,10 @@ export default function LoginPage() {
   function onGoogleResponse(response) {
     setStatus('loading');
     loginGoogle(response.credential)
-      .then(({ token }) => { setSession(token); navigate('/lobby'); })
+      .then(({ token }) => {
+        if (!setSession(token)) throw new Error('token_mal_formado');
+        navigate('/lobby');
+      })
       .catch(() => {
         setErrorMsg('No se pudo iniciar sesión. Inténtalo de nuevo.');
         setStatus('error');
@@ -61,8 +64,11 @@ export default function LoginPage() {
       setDevError('El token está vencido (duran 1 hora). Genera uno nuevo con node gen-token.mjs');
       return;
     }
+    if (!setSession(t)) {
+      setDevError('El token no tiene formato de JWT (deben ser 3 partes separadas por puntos).');
+      return;
+    }
     setDevError('');
-    setSession(t);
     navigate('/lobby');
   }
 
@@ -80,7 +86,10 @@ export default function LoginPage() {
       const { token } = modo === 'register'
         ? await registrarLocal({ email: form.email, password: form.password, apodo: form.apodo })
         : await loginLocal({ email: form.email, password: form.password });
-      setSession(token);
+      if (!setSession(token)) {
+        setLocalError(LOCAL_AUTH_ERRORS.error_desconocido);
+        return;
+      }
       navigate('/lobby');
     } catch (err) {
       // err.codigo es el código del backend (ApiError) → texto legible de constants/copy.

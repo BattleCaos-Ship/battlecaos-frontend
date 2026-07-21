@@ -184,7 +184,7 @@ function drawSea(c, rng, t) {
     if (pulse > -0.5) {
       const a = 0.3 + Math.max(0, pulse) * 0.7;
       const col = bright ? `rgba(180,200,230,${a})` : `rgba(100,130,170,${a * 0.6})`;
-      px(c, sx, sy, bright ? 1 : 1, 1, col);
+      px(c, sx, sy, 1, 1, col);
     }
   }
   // estrella fugaz ocasional
@@ -438,7 +438,7 @@ function drawWorkshop(c, rng, t) {
   for (let i = 0; i < 3; i++) {
     const rise = (t * 7 + i * 6) % 16;
     const o = 0.3 * (1 - rise / 16);
-    px(c, 212 + i * 3 + Math.sin(t * 2 + i) * 2, 4 - Math.min(rise, 4) + (rise > 4 ? 0 : 0), 3, 2, `rgba(210,218,224,${o})`);
+    px(c, 212 + i * 3 + Math.sin(t * 2 + i) * 2, 4 - Math.min(rise, 4), 3, 2, `rgba(210,218,224,${o})`);
     px(c, 214 + i * 3, Math.max(0, 2 - rise * 0.4), 2, 2, `rgba(210,218,224,${o * 0.7})`);
   }
 

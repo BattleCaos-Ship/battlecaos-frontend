@@ -27,9 +27,33 @@ permissions:
   contents: read
 
 jobs:
+  # GATE de calidad: si los tests fallan, NO se aprueba ni se despliega nada.
+  test:
+    uses: BattleCaos-Ship/battlecaos-infra/.github/workflows/ci-test.yml@main
+    with:
+      service: frontend
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  # APROBACIÓN de QA: usa el GitHub Environment 'qa'. Si ese environment tiene "required
+  # reviewers", GitHub PAUSA aquí hasta la aprobación humana. Si no está configurado, pasa
+  # de largo (no rompe). Configúralo en Settings → Environments → 'qa' → Required reviewers.
+  qa-aprobacion:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: qa
+    steps:
+      - run: echo "QA aprobado — desplegando frontend a dev"
+
   build:
+    needs: qa-aprobacion
     uses: BattleCaos-Ship/battlecaos-infra/.github/workflows/build-push-image.yml@main
     with:
       service: frontend
       environment: ${{ inputs.environment || 'dev' }}
-    secrets: inherit
+    secrets:
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
