@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import LoginPage from './LoginPage';
-import { loginLocal, registrarLocal } from '../api/auth';
+import { loginGoogle, loginLocal, registrarLocal } from '../api/auth';
 import * as configModule from '../api/config';
 
 // PixelBackdrop dibuja en <canvas> vía requestAnimationFrame; jsdom no implementa un
@@ -211,6 +211,29 @@ describe('LoginPage', () => {
     renderLoginPage();
     expect(screen.getByRole('button', { name: 'Entrar con token de prueba' })).toBeDisabled();
   });
+
+  it('modo desarrollo: decodeJwt() decodifica el SEGUNDO segmento sin importar cuántos haya —' +
+    ' un token con un segmento de más pasa la validación de payload pero setSession() lo rechaza' +
+    ' por no tener EXACTAMENTE forma de JWT (esTokenBienFormado)', () => {
+    const b64 = (o) => {
+      const bytes = new TextEncoder().encode(JSON.stringify(o));
+      let binario = '';
+      bytes.forEach((b) => { binario += String.fromCharCode(b); });
+      return btoa(binario).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    };
+    const exp = Math.floor(Date.now() / 1000) + 3600;
+    // 4 segmentos: decodeJwt() solo mira token.split('.')[1] (decodifica bien), pero
+    // FORMATO_JWT exige exactamente 3 segmentos → esTokenBienFormado() lo rechaza.
+    const token = `${b64({ alg: 'HS256' })}.${b64({ sub: 'u-1', name: 'Ana', exp })}.firma.extra`;
+
+    renderLoginPage();
+    fireEvent.change(screen.getByPlaceholderText('eyJhbGciOiJIUzI1NiI...'), { target: { value: token } });
+    fireEvent.click(screen.getByRole('button', { name: 'Entrar con token de prueba' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent('El token no tiene formato de JWT');
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(localStorage.getItem('token')).toBeNull();
+  });
 });
 
 describe('LoginPage con Google configurado', () => {
@@ -229,5 +252,62 @@ describe('LoginPage con Google configurado', () => {
     );
     expect(window.google.accounts.id.renderButton).toHaveBeenCalled();
     expect(screen.queryByText(/Inicio de sesión con Google no configurado/)).not.toBeInTheDocument();
+  });
+
+  // onGoogleResponse es el callback que Google Identity invoca con el credential — GSI no
+  // corre en jsdom, así que se dispara a mano tomando el `callback` que la propia LoginPage
+  // le pasó a google.accounts.id.initialize(), exactamente como lo haría el SDK real.
+  function dispararRespuestaGoogle(credential) {
+    const { callback } = window.google.accounts.id.initialize.mock.calls[0][0];
+    // callback() no pasa por el sistema de eventos de React (GSI lo llamaría desde fuera),
+    // así que hay que envolverlo en act() para que el setStatus('loading') inicial se
+    // refleje en el DOM antes de que la aserción lo lea.
+    act(() => { callback({ credential }); });
+  }
+
+  it('login con Google exitoso guarda la sesión y navega a /lobby', async () => {
+    loginGoogle.mockResolvedValue({ token: 'aaa.bbb.ccc' });
+    renderLoginPage();
+
+    dispararRespuestaGoogle('id-token-de-google');
+
+    expect(loginGoogle).toHaveBeenCalledWith('id-token-de-google');
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/lobby'));
+    expect(localStorage.getItem('token')).toBe('aaa.bbb.ccc');
+  });
+
+  it('si el backend rechaza el login con Google, muestra un error genérico y no navega', async () => {
+    loginGoogle.mockRejectedValue(new Error('caído'));
+    renderLoginPage();
+
+    dispararRespuestaGoogle('id-token-de-google');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo iniciar sesión');
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it('mientras se procesa la respuesta de Google, muestra "Cargando…"', async () => {
+    let resolver;
+    loginGoogle.mockReturnValue(new Promise((r) => { resolver = r; }));
+    renderLoginPage();
+
+    dispararRespuestaGoogle('id-token-de-google');
+    expect(screen.getByText('Cargando…')).toBeInTheDocument();
+
+    resolver({ token: 'aaa.bbb.ccc' });
+    await waitFor(() => expect(mockNavigate).toHaveBeenCalledWith('/lobby'));
+  });
+
+  it('si el backend de Google responde con un token mal formado, no navega y termina en el estado de error', async () => {
+    // El .then() de onGoogleResponse hace `if (!setSession(token)) throw ...` — ese throw lo
+    // atrapa el mismo .catch() del rechazo normal, así que el usuario ve el mismo error genérico.
+    loginGoogle.mockResolvedValue({ token: 'no-tiene-forma-de-jwt' });
+    renderLoginPage();
+
+    dispararRespuestaGoogle('id-token-de-google');
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No se pudo iniciar sesión');
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(localStorage.getItem('token')).toBeNull();
   });
 });
