@@ -3,7 +3,6 @@ import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
 import LoginPage from './pages/LoginPage';
 import LobbyPage from './pages/LobbyPage';
 import GamePage from './pages/GamePage';
-import ResultPage from './pages/ResultPage';
 import AdminPage from './pages/AdminPage';
 
 export default function App() {
@@ -14,7 +13,6 @@ export default function App() {
           <Route path="/" element={<LoginPage />} />
           <Route path="/lobby" element={<LobbyPage />} />
           <Route path="/game" element={<GamePage />} />
-          <Route path="/result" element={<ResultPage />} />
           <Route path="/admin" element={<AdminPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
